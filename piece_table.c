@@ -51,8 +51,8 @@ Piece_Table *create_table(const char *filename, const char *text, int global_cur
         fprintf(stderr, "No filename or text buffer provided!\n");
         exit(1);
     }
-    printf("%d\n", table->original_size);
-    printf("%s\n", table->original_buffer);
+    // printf("%d\n", table->original_size);
+    // printf("%s\n", table->original_buffer);
 
     // Create add buffer.
     table->add_buffer = (char *)malloc(INIT_ADD_SIZE * sizeof(char));
@@ -85,11 +85,11 @@ Piece_Table *create_table(const char *filename, const char *text, int global_cur
 
 void advance_cursor(Piece_Table *table, int advance) {
     Piece_List *curr = table->current_piece;
-    printf("%d\n", curr->length);
-    printf("%d\n", table->total_len);
-    printf("%d\n", table->global_cursor);
-    printf("%d\n", table->piece_cursor);
-    printf("%d\n", advance);
+    // printf("%d\n", curr->length);
+    // printf("%d\n", table->total_len);
+    // printf("%d\n", table->global_cursor);
+    // printf("%d\n", table->piece_cursor);
+    // printf("%d\n", advance);
     int piece_cursor = table->piece_cursor;
     if ((table->total_len < table->global_cursor + advance) || (table->global_cursor + advance < 0)) {
         fprintf(stderr, "Invalid cursor move!\n");
@@ -110,8 +110,8 @@ void advance_cursor(Piece_Table *table, int advance) {
             table->piece_cursor += advance;
         }
 
-        printf("Cursor: %d\n", table->piece_cursor);
-        printf("%d\n", table->current_piece->start);
+        // printf("Cursor: %d\n", table->piece_cursor);
+        // printf("%d\n", table->current_piece->start);
     } else if (advance < 0) {
         table->global_cursor += advance;
         advance = abs(advance);
@@ -124,11 +124,11 @@ void advance_cursor(Piece_Table *table, int advance) {
                 advance -= piece_cursor;
                 piece_cursor = 0;
             }
-            printf("%d ", piece_cursor);
+            // printf("%d ", piece_cursor);
         }
         table->current_piece = curr;
         table->piece_cursor = piece_cursor - advance;
-        printf("Cursor: %d\n", table->piece_cursor);
+        // printf("Cursor: %d\n", table->piece_cursor);
     }
 }
 
@@ -160,14 +160,14 @@ void add_text(Piece_Table *table, char *text) {
     memcpy(table->add_buffer + table->add_len, text, size + 1);
     table->add_len += size;
 
-    printf("okk\n");
+    // printf("okk\n");
     Piece_List *new_cell = create_piece_cell(table->add_len - size, size, table->add_buffer);
 
     // Insertion without fragmentation.
     if (table->piece_cursor == 0) {
-        printf("okkkkk\n");
+        // printf("okkkkk\n");
         Piece_List *prev = table->current_piece->prev;
-        printf("%d\n", prev->length);
+        // printf("%d\n", prev->length);
         insert_piece(prev, new_cell);
     } else {
         // Insertion with fragmentation.
@@ -210,7 +210,7 @@ void delete_text(Piece_Table *table, int length) {
 
     // No fragmentation.
     if (piece_cursor == length) {
-        printf("Fara fragmentare\n");
+        // printf("Fara fragmentare\n");
         Piece_List *prev = curr->prev;
 
         // Deallocation required.
@@ -221,15 +221,15 @@ void delete_text(Piece_Table *table, int length) {
         prev->next = end_piece;
         end_piece->prev = prev;
     } else if (end_cursor == 0) {
-        printf("Aici\n");
-        printf("%d\n", piece_cursor);
+        // printf("Aici\n");
+        // printf("%d\n", piece_cursor);
         // Fragmentation when the cursor is placed at the begging of the current piece.
         curr->length = piece_cursor - length;
         curr->next = end_piece;
         end_piece->prev = curr;
     } else {
         // Fragmentation.
-        printf("Fragmentare\n");
+        // printf("Fragmentare\n");
         Piece_List *prev = curr->prev;
 
         // Fragmentation in the end_piece.
@@ -245,7 +245,7 @@ void delete_text(Piece_Table *table, int length) {
             end_piece->prev = new_piece;
             prev->next = new_piece;
         } else {
-            printf("Aicea\n");
+            // printf("Aicea\n");
             // Fragmentation in a previous piece.
             // No deallocation required.
             curr->length -= (length + 1);

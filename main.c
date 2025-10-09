@@ -4,7 +4,7 @@
 #include <string.h>
 #include "piece_table.h"
 
-#define MAX_LINES 10
+#define MAX_LINES 100000
 #define MAX_COLS 50
 FILE *log_file;
 
@@ -67,8 +67,11 @@ void compute_new_pos(int *x, int *y, int *global_cursor, int total_len, int move
         else {
             if ((*y) == num_lines - 1)
                 return;
+            if (lines_lengts[*y] == MAX_COLS)
+                *x = 1;
+            else
+                *x = 0;
             *y = (*y) + 1;
-            *x = 0;
         }
     } else if (move == 2) {
         // Up.
@@ -116,7 +119,7 @@ void build_displayed_text(Piece_Table *table, char *displayed_text, int *lines_l
         displayed_text[strlen(text)] = 0;
         *num_lines = 1;
         lines_lengths[0] = 0;
-        printf("%s", "NIMIC AICI\n");
+        // printf("%s", "NIMIC AICI\n");
         *total_len = 0;
         // free(text);
         return;
@@ -142,7 +145,7 @@ void build_displayed_text(Piece_Table *table, char *displayed_text, int *lines_l
         }
         displayed_text[k++] = text[i];
     }
-    displayed_text[strlen(text)] = 0;
+    displayed_text[k] = 0;
 
     if (text[strlen(text) - 1] != '\n') {
         lines_lengths[j] = num;
@@ -225,11 +228,11 @@ int main(int argc, char *argv[]) {
 
     // printf("%d\n", global_cursor);
     build_displayed_text(table, displayed_text, lines_lengths, &num_lines, &total_len);
-    printf("UITE\n");
-    printf("%d\n", total_len);
-    printf("%d\n", num_lines);
-    printf("%d\n", lines_lengths[0]);
-    printf("%s %d\n", displayed_text, strlen(displayed_text));
+    // printf("UITE\n");
+    // printf("%d\n", total_len);
+    // printf("%d\n", num_lines);
+    // printf("%d\n", lines_lengths[0]);
+    // printf("%s %d\n", displayed_text, strlen(displayed_text));
     // while (1) {}
 
 
@@ -242,16 +245,17 @@ int main(int argc, char *argv[]) {
     int change = 1;
 	while (1) {
         int old_global_cursor = global_cursor;
-        clear();
+        
         
 		// Display buffer using the function:
 		// mvprintw
 		// /* to be deleted:
-        // if (change) {
+        if (change) {
+            clear();
             mvprintw(0, 0, "%s", displayed_text);
             draw_border();
             change = 0;
-        // }
+        }
 		// */
 
 		move(y, x); // Move cursor to current position
@@ -291,7 +295,7 @@ int main(int argc, char *argv[]) {
                 compute_new_pos(&x, &y, &global_cursor, total_len, 0, lines_lengths, num_lines);
             }
             build_displayed_text(table, displayed_text, lines_lengths, &num_lines, &total_len);
-            // change = 1;
+            change = 1;
         } else {
             // Add.
             int moves = 1;
@@ -305,7 +309,7 @@ int main(int argc, char *argv[]) {
                 for (int k = 0; k < moves; k++)
                     compute_new_pos(&x, &y, &global_cursor, total_len, 1, lines_lengths, num_lines);
             }
-            // change = 1;
+            change = 1;
         }
 
         // Advance the table's internal cursor.
